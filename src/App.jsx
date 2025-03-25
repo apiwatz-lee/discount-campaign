@@ -6,6 +6,7 @@ function App() {
   const [selectedCampaign, setSelectedCampaign] = useState({});
   const [discountApplies, setDiscountApplies] = useState([]);
   const [cart] = useState(initialCart);
+  const [balance, setBalance] = useState(0);
 
   const initialDiscounts = [
     {
@@ -39,7 +40,7 @@ function App() {
           />
         </div>
       ),
-      balance: 0,
+      calculateDiscount: (total, amount) => total - amount,
       order: 1,
     },
     {
@@ -73,7 +74,8 @@ function App() {
           />
         </div>
       ),
-      balance: 0,
+      calculateDiscount: (total, percentage) =>
+        total - (total * percentage) / 100,
       order: 1,
     },
     {
@@ -136,7 +138,7 @@ function App() {
           />
         </div>
       ),
-      balance: 0,
+      calculateDiscount: (total, amount) => total - (total * amount) / 100,
       order: 2,
     },
     {
@@ -170,7 +172,7 @@ function App() {
           />
         </div>
       ),
-      balance: 0,
+      calculateDiscount: (total, points) => total - points,
       order: 2,
     },
     {
@@ -233,7 +235,8 @@ function App() {
           />
         </div>
       ),
-      balance: 0,
+      calculateDiscount: (total, everyAmount, willDiscount) =>
+        total - Math.floor(total / everyAmount) * willDiscount,
       order: 3,
     },
   ];
@@ -265,7 +268,7 @@ function App() {
 
   useEffect(() => {
     setSelectedCampaign(discounts[0]);
-    setDiscountApplies(sortDiscounts(discountApplies));
+    setDiscountApplies((prev) => sortDiscounts(prev));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [discountApplies]);
 
@@ -291,9 +294,9 @@ function App() {
                 )
               }
             >
-              {discounts?.map(({ campaign }) => (
+              {discounts?.map(({ campaign, category }) => (
                 <option key={campaign} value={campaign}>
-                  {campaign}
+                  {campaign} ({category})
                 </option>
               ))}
             </select>
@@ -339,6 +342,71 @@ function App() {
 
       <section>
         <div>Total : {total}</div>
+        {discountApplies?.map((discount) => {
+          const { campaign } = discount;
+
+          switch (campaign) {
+            case 'Fixed amount':
+              return (
+                <div key={discount?.campaign}>
+                  {discount?.campaign} :
+                  {discount?.calculateDiscount(
+                    total,
+                    discount?.parameter?.amount
+                  )}
+                </div>
+              );
+            case 'Percentage discount':
+              return (
+                <div key={discount?.campaign}>
+                  {discount?.campaign} :
+                  {discount?.calculateDiscount(
+                    total,
+                    discount?.parameter?.percentage
+                  )}
+                </div>
+              );
+            case 'Percentage discount by item category':
+              return (
+                <div key={discount?.campaign}>
+                  {discount?.campaign} :
+                  {discount?.calculateDiscount(
+                    cart
+                      .filter(
+                        (item) =>
+                          item?.category ===
+                          discount?.parameter?.selectedCategory
+                      )
+                      .reduce((acc, curr) => acc + curr.price, 0),
+                    discount?.parameter?.amount
+                  )}
+                </div>
+              );
+            case 'Discount by points':
+              return (
+                <div key={discount?.campaign}>
+                  {discount?.campaign} :
+                  {discount?.calculateDiscount(
+                    total,
+                    discount?.parameter?.points
+                  )}
+                </div>
+              );
+            case 'Special campaigns':
+              return (
+                <div key={discount?.campaign}>
+                  {discount?.campaign} :
+                  {discount?.calculateDiscount(
+                    total,
+                    discount?.parameter?.everyAmount,
+                    discount?.parameter?.willDiscount
+                  )}
+                </div>
+              );
+            default:
+              return null;
+          }
+        })}
       </section>
     </main>
   );

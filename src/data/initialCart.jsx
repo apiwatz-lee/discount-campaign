@@ -2,7 +2,7 @@ export const initialCart = [
   {
     id: 1,
     name: 'T-shirt',
-    price: 350,
+    price: 300,
     quantity: 1,
     category: 'Clothing',
   },
@@ -23,21 +23,21 @@ export const initialCart = [
   {
     id: 4,
     name: 'Watch',
-    price: 850,
+    price: 800,
     quantity: 1,
     category: 'Accessories',
   },
   {
     id: 5,
     name: 'Jeans',
-    price: 640,
+    price: 1000,
     quantity: 1,
     category: 'Clothing',
   },
   {
     id: 6,
     name: 'Belt',
-    price: 230,
+    price: 200,
     quantity: 1,
     category: 'Accessories',
   },
