@@ -4,11 +4,36 @@ import { initialCart } from './data/initialCart';
 
 function App() {
   const [selectedCampaign, setSelectedCampaign] = useState({});
-  const [discountApplies, setDiscountApplies] = useState([]);
+  const [campaignApplies, setCampaignApplies] = useState([]);
   const [cart] = useState(initialCart);
-  const [balance, setBalance] = useState(0);
+  const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const [netPrice, setNetPrice] = useState(total);
+  const [eachDiscount, setEachDiscount] = useState({
+    fixedAmount: {
+      amount: 0,
+      balance: 0,
+    },
+    percentageDiscount: {
+      amount: 0,
+      balance: 0,
+    },
+    percentageDiscountByCategory: {
+      amount: 0,
+      balance: 0,
+    },
+    discountByPoints: {
+      amount: 0,
+      balance: 0,
+    },
+    specialCampaigns: {
+      everyAmount: 0,
+      willDiscount: 0,
+      amount: 0,
+      balance: 0,
+    },
+  });
 
-  const initialDiscounts = [
+  const initialCampaigns = [
     {
       campaign: 'Fixed amount',
       category: 'Coupon',
@@ -22,16 +47,16 @@ function App() {
           </label>
           <input
             onChange={(e) => {
-              setDiscounts((discounts) =>
-                discounts.map((discount) =>
-                  discount.campaign === 'Fixed amount'
+              setCampaigns((campaigns) =>
+                campaigns.map((prev) =>
+                  prev.campaign === 'Fixed amount'
                     ? {
-                        ...discount,
+                        ...prev,
                         parameter: {
                           amount: Number(e.target.value.replace(/\D/g, '')),
                         },
                       }
-                    : discount
+                    : prev
                 )
               );
             }}
@@ -40,7 +65,18 @@ function App() {
           />
         </div>
       ),
-      calculateDiscount: (total, amount) => total - amount,
+      calculateDiscount: (totalBeforeDiscount, amount) => {
+        const formulars = totalBeforeDiscount - amount;
+        setEachDiscount((eachDiscount) => ({
+          ...eachDiscount,
+          fixedAmount: {
+            ...eachDiscount.fixedAmount,
+            amount,
+            balance: formulars,
+          },
+        }));
+        return formulars;
+      },
       order: 1,
     },
     {
@@ -56,16 +92,16 @@ function App() {
           </label>
           <input
             onChange={(e) =>
-              setDiscounts((discounts) =>
-                discounts.map((discount) =>
-                  discount.campaign === 'Percentage discount'
+              setCampaigns((campaigns) =>
+                campaigns.map((prev) =>
+                  prev.campaign === 'Percentage discount'
                     ? {
-                        ...discount,
+                        ...prev,
                         parameter: {
                           percentage: Number(e.target.value.replace(/\D/g, '')),
                         },
                       }
-                    : discount
+                    : prev
                 )
               )
             }
@@ -74,8 +110,19 @@ function App() {
           />
         </div>
       ),
-      calculateDiscount: (total, percentage) =>
-        total - (total * percentage) / 100,
+      calculateDiscount: (totalBeforeDiscount, percentage) => {
+        const formulars =
+          totalBeforeDiscount - totalBeforeDiscount * percentage * 0.01;
+        setEachDiscount((eachDiscount) => ({
+          ...eachDiscount,
+          percentageDiscount: {
+            ...eachDiscount.percentageDiscount,
+            amount: totalBeforeDiscount * percentage * 0.01,
+            balance: formulars,
+          },
+        }));
+        return formulars;
+      },
       order: 1,
     },
     {
@@ -92,17 +139,17 @@ function App() {
           <select
             value={params.selectedCategory}
             onChange={(e) =>
-              setDiscounts(
-                discounts.map((discount) =>
-                  discount.campaign === 'Percentage discount by item category'
+              setCampaigns(
+                campaigns.map((prev) =>
+                  prev.campaign === 'Percentage discount by item category'
                     ? {
-                        ...discount,
+                        ...prev,
                         parameter: {
-                          ...discount.parameter,
+                          ...prev.parameter,
                           selectedCategory: e.target.value,
                         },
                       }
-                    : discount
+                    : prev
                 )
               )
             }
@@ -119,17 +166,17 @@ function App() {
           </label>
           <input
             onChange={(e) =>
-              setDiscounts((discounts) =>
-                discounts.map((discount) =>
-                  discount.campaign === 'Percentage discount by item category'
+              setCampaigns((campaigns) =>
+                campaigns.map((prev) =>
+                  prev.campaign === 'Percentage discount by item category'
                     ? {
-                        ...discount,
+                        ...prev,
                         parameter: {
-                          ...discount.parameter,
+                          ...prev.parameter,
                           amount: Number(e.target.value.replace(/\D/g, '')),
                         },
                       }
-                    : discount
+                    : prev
                 )
               )
             }
@@ -138,7 +185,18 @@ function App() {
           />
         </div>
       ),
-      calculateDiscount: (total, amount) => total - (total * amount) / 100,
+      calculateDiscount: (totalAfterCoupon, totalCategory, amount) => {
+        const formulars = totalAfterCoupon - totalCategory * amount * 0.01;
+        setEachDiscount((eachDiscount) => ({
+          ...eachDiscount,
+          percentageDiscountByCategory: {
+            ...eachDiscount.percentageDiscountByCategory,
+            amount: totalCategory * amount * 0.01,
+            balance: formulars,
+          },
+        }));
+        return formulars;
+      },
       order: 2,
     },
     {
@@ -154,16 +212,16 @@ function App() {
           </label>
           <input
             onChange={(e) =>
-              setDiscounts((discounts) =>
-                discounts.map((discount) =>
-                  discount.campaign === 'Discount by points'
+              setCampaigns((campaigns) =>
+                campaigns.map((prev) =>
+                  prev.campaign === 'Discount by points'
                     ? {
-                        ...discount,
+                        ...prev,
                         parameter: {
                           points: Number(e.target.value.replace(/\D/g, '')),
                         },
                       }
-                    : discount
+                    : prev
                 )
               )
             }
@@ -172,7 +230,18 @@ function App() {
           />
         </div>
       ),
-      calculateDiscount: (total, points) => total - points,
+      calculateDiscount: (totalAfterCoupon, points) => {
+        const formulars = totalAfterCoupon - points;
+        setEachDiscount((eachDiscount) => ({
+          ...eachDiscount,
+          discountByPoints: {
+            ...eachDiscount.discountByPoints,
+            amount: points,
+            balance: formulars,
+          },
+        }));
+        return formulars;
+      },
       order: 2,
     },
     {
@@ -189,19 +258,19 @@ function App() {
           </label>
           <input
             onChange={(e) =>
-              setDiscounts((discounts) =>
-                discounts.map((discount) =>
-                  discount.campaign === 'Special campaigns'
+              setCampaigns((campaigns) =>
+                campaigns.map((prev) =>
+                  prev.campaign === 'Special campaigns'
                     ? {
-                        ...discount,
+                        ...prev,
                         parameter: {
-                          ...discount.parameter,
+                          ...prev.parameter,
                           everyAmount: Number(
                             e.target.value.replace(/\D/g, '')
                           ),
                         },
                       }
-                    : discount
+                    : prev
                 )
               )
             }
@@ -214,19 +283,19 @@ function App() {
           </label>
           <input
             onChange={(e) =>
-              setDiscounts((discounts) =>
-                discounts.map((discount) =>
-                  discount.campaign === 'Special campaigns'
+              setCampaigns((campaigns) =>
+                campaigns.map((prev) =>
+                  prev.campaign === 'Special campaigns'
                     ? {
-                        ...discount,
+                        ...prev,
                         parameter: {
-                          ...discount.parameter,
+                          ...prev.parameter,
                           willDiscount: Number(
                             e.target.value.replace(/\D/g, '')
                           ),
                         },
                       }
-                    : discount
+                    : prev
                 )
               )
             }
@@ -235,50 +304,89 @@ function App() {
           />
         </div>
       ),
-      calculateDiscount: (total, everyAmount, willDiscount) =>
-        total - Math.floor(total / everyAmount) * willDiscount,
+      calculateDiscount: (totalAfterOnTop, everyAmount, willDiscount) => {
+        const formulars =
+          totalAfterOnTop -
+          Math.floor(totalAfterOnTop / everyAmount) * willDiscount;
+
+        setEachDiscount((eachDiscount) => ({
+          ...eachDiscount,
+          specialCampaigns: {
+            ...eachDiscount.specialCampaigns,
+            willDiscount,
+            everyAmount,
+            amount: Math.floor(totalAfterOnTop / everyAmount) * willDiscount,
+            balance: formulars,
+          },
+        }));
+        return formulars;
+      },
       order: 3,
     },
   ];
 
-  const [discounts, setDiscounts] = useState(initialDiscounts);
+  const [campaigns, setCampaigns] = useState(initialCampaigns);
 
-  const total = cart.reduce((acc, curr) => acc + curr.price, 0);
+  const handleCalculateFinalPrice = () => {
+    return campaignApplies.reduce((currentTotal, item) => {
+      switch (item.campaign) {
+        case 'Fixed amount':
+          return item.calculateDiscount(currentTotal, item.parameter.amount);
+        case 'Percentage discount':
+          return item.calculateDiscount(
+            currentTotal,
+            item.parameter.percentage
+          );
+        case 'Percentage discount by item category':
+          return item.calculateDiscount(
+            currentTotal,
+            cart
+              .filter(
+                ({ category }) => category === item.parameter.selectedCategory
+              )
+              .reduce((acc, item) => acc + item.price * item.quantity, 0),
+            item.parameter.amount
+          );
+        case 'Discount by points':
+          return item.calculateDiscount(currentTotal, item.parameter.points);
+        case 'Special campaigns':
+          return item.calculateDiscount(
+            currentTotal,
+            item.parameter.everyAmount,
+            item.parameter.willDiscount
+          );
+        default:
+          return currentTotal;
+      }
+    }, total);
+  };
 
   const handleApplyDiscount = (e) => {
     e.preventDefault();
-    setDiscountApplies([
-      discounts.find(
-        (discount) => discount.campaign === selectedCampaign.campaign
-      ),
-      ...discountApplies,
-    ]);
-    setDiscounts(
-      discounts.filter(
-        (discount) =>
-          discount.campaign !== selectedCampaign.campaign &&
-          discount.category !== selectedCampaign.category
+    setCampaignApplies(
+      [
+        ...campaignApplies,
+        campaigns.find((prev) => prev.campaign === selectedCampaign.campaign),
+      ].sort((a, b) => a.order - b.order)
+    );
+    setCampaigns(
+      campaigns.filter(
+        (prev) =>
+          prev.campaign !== selectedCampaign.campaign &&
+          prev.category !== selectedCampaign.category
       )
     );
   };
 
-  const sortDiscounts = (discounts) => {
-    return discounts.sort((a, b) => a.order - b.order);
-  };
-
   useEffect(() => {
-    setSelectedCampaign(discounts[0]);
-    setDiscountApplies((prev) => sortDiscounts(prev));
+    setSelectedCampaign(campaigns[0]);
+    setNetPrice(handleCalculateFinalPrice());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [discountApplies]);
-
-  // console.log('selectedCampaign', selectedCampaign);
-  // console.log('discounts', discounts);
-  console.log('discountApplies', discountApplies);
+  }, [campaignApplies]);
 
   return (
     <main className='mx-auto container flex flex-col justify-center items-center gap-12 my-28'>
-      {discounts.length > 0 && (
+      {campaigns.length > 0 && (
         <form className='flex flex-col gap-4' onSubmit={handleApplyDiscount}>
           <div className='flex gap-4 '>
             <label className='min-w-22 text-start content-center'>
@@ -288,13 +396,13 @@ function App() {
               className='border border-gray-200 rounded-2xl p-2'
               onChange={(e) =>
                 setSelectedCampaign(
-                  discounts.find(
+                  campaigns.find(
                     (discount) => discount.campaign === e.target.value
                   )
                 )
               }
             >
-              {discounts?.map(({ campaign, category }) => (
+              {campaigns?.map(({ campaign, category }) => (
                 <option key={campaign} value={campaign}>
                   {campaign} ({category})
                 </option>
@@ -302,10 +410,10 @@ function App() {
             </select>
           </div>
           <div className='flex gap-4 '>
-            {discounts?.map(
-              (discount) =>
-                discount?.campaign === selectedCampaign.campaign &&
-                discount?.component(discount?.parameter, discount?.campaign)
+            {campaigns?.map(
+              (prev) =>
+                prev?.campaign === selectedCampaign.campaign &&
+                prev?.component(prev?.parameter, prev?.campaign)
             )}
           </div>
           <button
@@ -322,15 +430,17 @@ function App() {
           <thead>
             <tr>
               <th className='border px-4 py-2'>Product</th>
+              <th className='border px-4 py-2'>Category</th>
               <th className='border px-4 py-2'>Price</th>
               <th className='border px-4 py-2'>Quantity</th>
               <th className='border px-4 py-2'>Total</th>
             </tr>
           </thead>
           <tbody>
-            {cart.map(({ id, name, price, quantity }) => (
+            {cart.map(({ id, name, price, quantity, category }) => (
               <tr key={id}>
                 <td className='border px-4 py-2'>{name}</td>
+                <td className='border px-4 py-2'>{category}</td>
                 <td className='border px-4 py-2'>{price}</td>
                 <td className='border px-4 py-2'>{quantity}</td>
                 <td className='border px-4 py-2'>{price * quantity}</td>
@@ -341,72 +451,28 @@ function App() {
       </section>
 
       <section>
-        <div>Total : {total}</div>
-        {discountApplies?.map((discount) => {
-          const { campaign } = discount;
+        <div>Total before discount : {total}</div>
+        {Object.entries(eachDiscount).map(([key, value]) => {
+          // if (!value.amount) return null;
 
-          switch (campaign) {
-            case 'Fixed amount':
-              return (
-                <div key={discount?.campaign}>
-                  {discount?.campaign} :
-                  {discount?.calculateDiscount(
-                    total,
-                    discount?.parameter?.amount
-                  )}
-                </div>
-              );
-            case 'Percentage discount':
-              return (
-                <div key={discount?.campaign}>
-                  {discount?.campaign} :
-                  {discount?.calculateDiscount(
-                    total,
-                    discount?.parameter?.percentage
-                  )}
-                </div>
-              );
-            case 'Percentage discount by item category':
-              return (
-                <div key={discount?.campaign}>
-                  {discount?.campaign} :
-                  {discount?.calculateDiscount(
-                    cart
-                      .filter(
-                        (item) =>
-                          item?.category ===
-                          discount?.parameter?.selectedCategory
-                      )
-                      .reduce((acc, curr) => acc + curr.price, 0),
-                    discount?.parameter?.amount
-                  )}
-                </div>
-              );
-            case 'Discount by points':
-              return (
-                <div key={discount?.campaign}>
-                  {discount?.campaign} :
-                  {discount?.calculateDiscount(
-                    total,
-                    discount?.parameter?.points
-                  )}
-                </div>
-              );
-            case 'Special campaigns':
-              return (
-                <div key={discount?.campaign}>
-                  {discount?.campaign} :
-                  {discount?.calculateDiscount(
-                    total,
-                    discount?.parameter?.everyAmount,
-                    discount?.parameter?.willDiscount
-                  )}
-                </div>
-              );
-            default:
-              return null;
-          }
+          const discountLabels = {
+            fixedAmount: 'Fixed amount :',
+            percentageDiscount: 'Percentage discount % :',
+            percentageDiscountByCategory:
+              'Percentage discount by item category :',
+            discountByPoints: 'Discount by points :',
+            specialCampaigns: `Special campaigns : every ${value.everyAmount} will discount ${value.willDiscount}`,
+          };
+
+          return (
+            <div key={key}>
+              {discountLabels[key]} {key === 'specialCampaigns' && `amount `}
+              {value.amount} balance {value.balance}
+            </div>
+          );
         })}
+
+        {campaignApplies.length > 0 && <div>Net price : {netPrice}</div>}
       </section>
     </main>
   );
