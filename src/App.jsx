@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 import { initialCart } from './data/initialCart';
+import { formarNumberWithCommas } from './common';
 
 function App() {
   const [selectedCampaign, setSelectedCampaign] = useState({});
   const [campaignApplies, setCampaignApplies] = useState([]);
   const [cart] = useState(initialCart);
+
   const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
   const [netPrice, setNetPrice] = useState(total);
   const [eachDiscount, setEachDiscount] = useState({
     fixedAmount: {
@@ -435,6 +438,7 @@ function App() {
 
   const handleApplyDiscount = (e) => {
     e.preventDefault();
+
     if (handleValidateInput()) {
       setCampaignApplies(
         [
@@ -458,8 +462,8 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [campaignApplies]);
 
-  // console.log('selectedCampaign', selectedCampaign);
-  console.log('discountApplies', campaignApplies);
+  console.log('selectedCampaign', selectedCampaign);
+  console.log(eachDiscount);
 
   return (
     <main className='mx-auto container flex flex-col justify-center items-center gap-12 my-28'>
@@ -521,31 +525,67 @@ function App() {
               <tr key={id}>
                 <td className='border px-4 py-2'>{name}</td>
                 <td className='border px-4 py-2'>{category}</td>
-                <td className='border px-4 py-2'>{price}</td>
+                <td className='border px-4 py-2'>
+                  {formarNumberWithCommas(price)}
+                </td>
                 <td className='border px-4 py-2'>{quantity}</td>
-                <td className='border px-4 py-2'>{price * quantity}</td>
+                <td className='border px-4 py-2'>
+                  {formarNumberWithCommas(price * quantity)}
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
 
         <div>
-          <div>Total before discount : {total}</div>
+          <div>Total before discount : {formarNumberWithCommas(total)}</div>
           {Object.entries(eachDiscount).map(([key, value]) => {
             if (!value.discountAmount) return null;
 
             const discountLabels = {
-              fixedAmount: `You saved ${value.discountAmount}! Your remaining balance is ${value.balance}.`,
-              percentageDiscount: `Awesome! You got a ${value.discountPercent}%, you saved ${value.discountAmount} THB. Your balance is now ${value.balance}.`,
-              percentageDiscountByCategory: `Great news! Your ${value.selectedCategory} items received a ${value.discountPercent}% discount (${value.totalCategory} items in total), saving you ${value.discountAmount}. Your balance is now ${value.balance}.`,
-              discountByPoints: `Nice! You used your points and saved ${value.discountAmount}. Your new balance is ${value.balance}.`,
-              specialCampaigns: `Lucky you! For every ${value.everyAmount} spent, you get a ${value.willDiscount} discount. This time, you saved ${value.discountAmount}, leaving you with a balance of ${value.balance}.`,
+              fixedAmount: `You saved ${formarNumberWithCommas(
+                value.discountAmount
+              )}! Your remaining balance is ${formarNumberWithCommas(
+                value.balance
+              )}.`,
+              percentageDiscount: `Awesome! You got a ${
+                value.discountPercent
+              }%, you saved ${formarNumberWithCommas(
+                value.discountAmount
+              )} THB. Your balance is now ${formarNumberWithCommas(
+                value.balance
+              )}.`,
+              percentageDiscountByCategory: `Great news! Your ${
+                value.selectedCategory
+              } items received a ${value.discountPercent}% discount (${
+                value.totalCategory
+              } items in total), saving you ${formarNumberWithCommas(
+                value.discountAmount
+              )}. Your balance is now ${formarNumberWithCommas(
+                value.balance
+              )}.`,
+              discountByPoints: `Nice! You used your points and saved ${formarNumberWithCommas(
+                value.discountAmount
+              )}. Your new balance is ${formarNumberWithCommas(
+                value.balance
+              )}.`,
+              specialCampaigns: `Lucky you! For every ${formarNumberWithCommas(
+                value.everyAmount
+              )} spent, you get a ${formarNumberWithCommas(
+                value.willDiscount
+              )} discount. This time, you saved ${formarNumberWithCommas(
+                value.discountAmount
+              )}, leaving you with a balance of ${formarNumberWithCommas(
+                value.balance
+              )}.`,
             };
 
             return <div key={key}>{discountLabels[key]}</div>;
           })}
 
-          {campaignApplies.length > 0 && <div>Net price : {netPrice}</div>}
+          {campaignApplies.length > 0 && (
+            <div>Net price : {formarNumberWithCommas(netPrice)}</div>
+          )}
         </div>
       </section>
     </main>
