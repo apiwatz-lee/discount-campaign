@@ -82,7 +82,7 @@ const PriceDetail = ({
             discountByPoints: (
               <>
                 <span className='font-bold text-green-700'>{`ON TOP: `}</span>
-                Nice! You used your points and saved{' '}
+                You used your points and saved{' '}
                 <span className='font-bold text-green-700'>
                   THB{formarNumberWithCommas(value.discountAmount)}
                 </span>
@@ -96,7 +96,7 @@ const PriceDetail = ({
             specialCampaigns: (
               <>
                 <span className='font-bold text-green-700'>{`SEASONAL: `}</span>
-                Lucky you! For every{' '}
+                For every{' '}
                 <span className='font-bold text-green-700'>
                   THB
                   {formarNumberWithCommas(value.everyAmount)}{' '}
