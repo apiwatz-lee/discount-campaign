@@ -21,6 +21,7 @@ function App() {
       selectedCategory: '',
       totalCategory: 0,
       discountAmount: 0,
+      discountPercent: 0,
       balance: 0,
     },
     discountByPoints: {
@@ -119,6 +120,7 @@ function App() {
           ...prev,
           percentageDiscount: {
             ...prev.percentageDiscount,
+            discountPercent: percentage,
             discountAmount: totalBeforeDiscount * percentage * 0.01,
             balance: formulars,
           },
@@ -200,6 +202,7 @@ function App() {
             ...prev.percentageDiscountByCategory,
             selectedCategory,
             totalCategory: totalCategory,
+            discountPercent: amount,
             discountAmount: totalCategory * amount * 0.01,
             balance: formulars,
           },
@@ -379,22 +382,74 @@ function App() {
     }, total);
   };
 
+  const handleValidateInput = () => {
+    if (!selectedCampaign.campaign) return false;
+
+    const fixedAmount = campaigns.find(
+      (item) => item.campaign === 'Fixed amount'
+    );
+    const percentageDiscount = campaigns.find(
+      (item) => item.campaign === 'Percentage discount'
+    );
+    const percentageDiscountByCategory = campaigns.find(
+      (item) => item.campaign === 'Percentage discount by item category'
+    );
+    const discountByPoints = campaigns.find(
+      (item) => item.campaign === 'Discount by points'
+    );
+    const specialCampaigns = campaigns.find(
+      (item) => item.campaign === 'Special campaigns'
+    );
+
+    switch (selectedCampaign.campaign) {
+      case 'Fixed amount':
+        return (
+          fixedAmount.parameter.amount > 0 &&
+          fixedAmount.parameter.amount <= total
+        );
+      case 'Percentage discount':
+        return (
+          percentageDiscount.parameter.percentage > 0 &&
+          percentageDiscount.parameter.percentage <= 100
+        );
+      case 'Percentage discount by item category':
+        return (
+          percentageDiscountByCategory.parameter.amount > 0 &&
+          percentageDiscountByCategory.parameter.amount <= 100 &&
+          percentageDiscountByCategory.parameter.selectedCategory
+        );
+      case 'Discount by points':
+        return discountByPoints.parameter.points > 0;
+      case 'Special campaigns':
+        return (
+          specialCampaigns.parameter.everyAmount > 0 &&
+          specialCampaigns.parameter.willDiscount > 0 &&
+          specialCampaigns.parameter.everyAmount < total &&
+          specialCampaigns.parameter.willDiscount <
+            specialCampaigns.parameter.everyAmount
+        );
+      default:
+        return false;
+    }
+  };
+
   const handleApplyDiscount = (e) => {
     e.preventDefault();
-    if (!selectedCampaign.campaign) return;
-    setCampaignApplies(
-      [
-        ...campaignApplies,
-        campaigns.find((prev) => prev.campaign === selectedCampaign.campaign),
-      ].sort((a, b) => a.order - b.order)
-    );
-    setCampaigns(
-      campaigns.filter(
-        (prev) =>
-          prev.campaign !== selectedCampaign.campaign &&
-          prev.category !== selectedCampaign.category
-      )
-    );
+    if (handleValidateInput()) {
+      setCampaignApplies(
+        [
+          ...campaignApplies,
+          campaigns.find((prev) => prev.campaign === selectedCampaign.campaign),
+        ].sort((a, b) => a.order - b.order)
+      );
+      setCampaigns(
+        campaigns.filter(
+          (prev) =>
+            prev.campaign !== selectedCampaign.campaign &&
+            prev.category !== selectedCampaign.category
+        )
+      );
+    }
   };
 
   useEffect(() => {
@@ -404,7 +459,7 @@ function App() {
   }, [campaignApplies]);
 
   // console.log('selectedCampaign', selectedCampaign);
-  // console.log('discountApplies', campaignApplies);
+  console.log('discountApplies', campaignApplies);
 
   return (
     <main className='mx-auto container flex flex-col justify-center items-center gap-12 my-28'>
@@ -450,7 +505,7 @@ function App() {
         </form>
       )}
 
-      <section>
+      <section className='flex gap-8'>
         <table className='table-auto'>
           <thead>
             <tr>
@@ -473,25 +528,25 @@ function App() {
             ))}
           </tbody>
         </table>
-      </section>
 
-      <section>
-        <div>Total before discount : {total}</div>
-        {Object.entries(eachDiscount).map(([key, value]) => {
-          if (!value.discountAmount) return null;
+        <div>
+          <div>Total before discount : {total}</div>
+          {Object.entries(eachDiscount).map(([key, value]) => {
+            if (!value.discountAmount) return null;
 
-          const discountLabels = {
-            fixedAmount: `Fixed amount discount : got discount ${value.discountAmount} balance ${value.balance}`,
-            percentageDiscount: `Percentage discount % : got discount ${value.discountAmount} balance ${value.balance}`,
-            percentageDiscountByCategory: `Percentage discount by item category : ${value.selectedCategory} ${value.totalCategory} got discount ${value.discountAmount} balance ${value.balance}`,
-            discountByPoints: `Discount by points : got discount ${value.discountAmount} balance ${value.balance}`,
-            specialCampaigns: `Special campaigns : every ${value.everyAmount} will discount ${value.willDiscount}, you got discount ${value.discountAmount} balance ${value.balance}`,
-          };
+            const discountLabels = {
+              fixedAmount: `You saved ${value.discountAmount}! Your remaining balance is ${value.balance}.`,
+              percentageDiscount: `Awesome! You got a ${value.discountPercent}%, you saved ${value.discountAmount} THB. Your balance is now ${value.balance}.`,
+              percentageDiscountByCategory: `Great news! Your ${value.selectedCategory} items received a ${value.discountPercent}% discount (${value.totalCategory} items in total), saving you ${value.discountAmount}. Your balance is now ${value.balance}.`,
+              discountByPoints: `Nice! You used your points and saved ${value.discountAmount}. Your new balance is ${value.balance}.`,
+              specialCampaigns: `Lucky you! For every ${value.everyAmount} spent, you get a ${value.willDiscount} discount. This time, you saved ${value.discountAmount}, leaving you with a balance of ${value.balance}.`,
+            };
 
-          return <div key={key}>{discountLabels[key]}</div>;
-        })}
+            return <div key={key}>{discountLabels[key]}</div>;
+          })}
 
-        {campaignApplies.length > 0 && <div>Net price : {netPrice}</div>}
+          {campaignApplies.length > 0 && <div>Net price : {netPrice}</div>}
+        </div>
       </section>
     </main>
   );
