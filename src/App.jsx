@@ -76,7 +76,7 @@ function App() {
         setEachDiscount((prev) => ({
           ...prev,
           fixedAmount: {
-            ...eachDiscount.fixedAmount,
+            ...prev.fixedAmount,
             discountAmount: amount,
             balance: formulars,
           },
@@ -346,7 +346,7 @@ function App() {
 
   const [campaigns, setCampaigns] = useState(initialCampaigns);
 
-  const handleCalculateFinalPrice = () => {
+  const handleCalculateDiscount = () => {
     return campaignApplies.reduce((currentTotal, item) => {
       switch (item.campaign) {
         case 'Fixed amount':
@@ -457,13 +457,15 @@ function App() {
   };
 
   useEffect(() => {
-    // setSelectedCampaign(campaigns[0]);
-    setNetPrice(handleCalculateFinalPrice());
+    setNetPrice(handleCalculateDiscount());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [campaignApplies]);
 
-  console.log('selectedCampaign', selectedCampaign);
-  console.log(eachDiscount);
+  const totalDiscount = Object.entries(eachDiscount)
+    .map(([key, value]) => value.discountAmount)
+    .reduce((acc, item) => acc + item, 0);
+
+  console.log('totalDiscount', totalDiscount);
 
   return (
     <main className='mx-auto container flex flex-col justify-center items-center gap-12 my-28'>
@@ -471,7 +473,7 @@ function App() {
         <form className='flex flex-col gap-4' onSubmit={handleApplyDiscount}>
           <div className='flex gap-4 '>
             <label className='min-w-22 text-start content-center'>
-              Campaign
+              Campaigns :
             </label>
             <select
               className='border border-gray-200 rounded-2xl p-2'
@@ -509,7 +511,7 @@ function App() {
         </form>
       )}
 
-      <section className='flex gap-8'>
+      <section className='flex justify-center gap-8 w-full'>
         <table className='table-auto'>
           <thead>
             <tr>
@@ -537,54 +539,135 @@ function App() {
           </tbody>
         </table>
 
-        <div>
-          <div>Total before discount : {formarNumberWithCommas(total)}</div>
-          {Object.entries(eachDiscount).map(([key, value]) => {
-            if (!value.discountAmount) return null;
+        <div className='min-w-xl max-w-xl flex flex-col gap-6'>
+          <div className='font-bold'>
+            TOTAL PRICE :{' '}
+            <span className='font-bold text-red-500'>
+              THB{formarNumberWithCommas(total)}
+            </span>
+          </div>
 
-            const discountLabels = {
-              fixedAmount: `You saved ${formarNumberWithCommas(
-                value.discountAmount
-              )}! Your remaining balance is ${formarNumberWithCommas(
-                value.balance
-              )}.`,
-              percentageDiscount: `Awesome! You got a ${
-                value.discountPercent
-              }%, you saved ${formarNumberWithCommas(
-                value.discountAmount
-              )} THB. Your balance is now ${formarNumberWithCommas(
-                value.balance
-              )}.`,
-              percentageDiscountByCategory: `Great news! Your ${
-                value.selectedCategory
-              } items received a ${value.discountPercent}% discount (${
-                value.totalCategory
-              } items in total), saving you ${formarNumberWithCommas(
-                value.discountAmount
-              )}. Your balance is now ${formarNumberWithCommas(
-                value.balance
-              )}.`,
-              discountByPoints: `Nice! You used your points and saved ${formarNumberWithCommas(
-                value.discountAmount
-              )}. Your new balance is ${formarNumberWithCommas(
-                value.balance
-              )}.`,
-              specialCampaigns: `Lucky you! For every ${formarNumberWithCommas(
-                value.everyAmount
-              )} spent, you get a ${formarNumberWithCommas(
-                value.willDiscount
-              )} discount. This time, you saved ${formarNumberWithCommas(
-                value.discountAmount
-              )}, leaving you with a balance of ${formarNumberWithCommas(
-                value.balance
-              )}.`,
-            };
+          <div>
+            {Object.entries(eachDiscount).map(([key, value]) => {
+              if (!value.discountAmount) return null;
 
-            return <div key={key}>{discountLabels[key]}</div>;
-          })}
+              const discountLabels = {
+                fixedAmount: (
+                  <>
+                    <span className='font-bold text-green-700'>{`COUPON: `}</span>
+                    You saved{' '}
+                    <span className='font-bold text-green-700'>
+                      THB{formarNumberWithCommas(value.discountAmount)}!
+                    </span>{' '}
+                    Your remaining balance is{' '}
+                    <span className='font-bold text-green-700'>
+                      THB{formarNumberWithCommas(value.balance)}
+                    </span>
+                    .
+                  </>
+                ),
+                percentageDiscount: (
+                  <>
+                    <span className='font-bold text-green-700'>{`COUPON: `}</span>
+                    Awesome! You got a{' '}
+                    <span className='font-bold text-green-700'>
+                      {value.discountPercent}%
+                    </span>
+                    , you saved{' '}
+                    <span className='font-bold text-green-700'>
+                      THB{formarNumberWithCommas(value.discountAmount)}
+                    </span>
+                    . Your balance is now{' '}
+                    <span className='font-bold text-green-700'>
+                      THB
+                      {formarNumberWithCommas(value.balance)}.
+                    </span>
+                  </>
+                ),
+                percentageDiscountByCategory: (
+                  <>
+                    <span className='font-bold text-green-700'>{`ON TOP: `}</span>
+                    Great news! Your{' '}
+                    <span className='font-bold text-green-700'>
+                      {value.selectedCategory}
+                    </span>{' '}
+                    items received a{' '}
+                    <span className='font-bold text-green-700'>
+                      {value.discountPercent}%
+                    </span>{' '}
+                    discount (
+                    <span className='font-bold text-green-700'>
+                      THB{formarNumberWithCommas(value.totalCategory)}
+                    </span>{' '}
+                    items in total), saving you{' '}
+                    <span className='font-bold text-green-700'>
+                      THB{formarNumberWithCommas(value.discountAmount)}
+                    </span>
+                    . Your balance is now{' '}
+                    <span className='font-bold text-green-700'>
+                      THB{formarNumberWithCommas(value.balance)}
+                    </span>
+                    .
+                  </>
+                ),
+                discountByPoints: (
+                  <>
+                    <span className='font-bold text-green-700'>{`ON TOP: `}</span>
+                    Nice! You used your points and saved{' '}
+                    <span className='font-bold text-green-700'>
+                      THB{formarNumberWithCommas(value.discountAmount)}
+                    </span>
+                    . Your new balance is{' '}
+                    <span className='font-bold text-green-700'>
+                      THB{formarNumberWithCommas(value.balance)}
+                    </span>
+                    .
+                  </>
+                ),
+                specialCampaigns: (
+                  <>
+                    <span className='font-bold text-green-700'>{`SEASONAL: `}</span>
+                    Lucky you! For every{' '}
+                    <span className='font-bold text-green-700'>
+                      THB
+                      {formarNumberWithCommas(value.everyAmount)}{' '}
+                    </span>
+                    spent, you get a{' '}
+                    <span className='font-bold text-green-700'>
+                      THB{formarNumberWithCommas(value.willDiscount)}
+                    </span>{' '}
+                    discount. This time, you saved{' '}
+                    <span className='font-bold text-green-700'>
+                      THB{formarNumberWithCommas(value.discountAmount)}
+                    </span>{' '}
+                    leaving you with a balance of{' '}
+                    <span className='font-bold text-green-700'>
+                      THB
+                      {formarNumberWithCommas(value.balance)}
+                    </span>
+                  </>
+                ),
+              };
+
+              return <div key={key}>{discountLabels[key]}</div>;
+            })}
+          </div>
 
           {campaignApplies.length > 0 && (
-            <div>Net price : {formarNumberWithCommas(netPrice)}</div>
+            <div>
+              <div className='font-bold'>
+                NET DISCOUNT :{' '}
+                <span className='font-bold text-green-700'>
+                  THB{formarNumberWithCommas(totalDiscount)}
+                </span>
+              </div>
+              <div className='font-bold '>
+                NET PRICE :{' '}
+                <span className='font-bold text-red-500'>
+                  THB{formarNumberWithCommas(netPrice)}
+                </span>
+              </div>
+            </div>
           )}
         </div>
       </section>
