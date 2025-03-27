@@ -13,7 +13,10 @@ const CampaignSelector = ({
         <select
           className='border border-gray-200 rounded-2xl p-2'
           onChange={(e) => {
-            if (e.target.value === '') return;
+            if (e.target.value === '') {
+              onSelect({});
+              return;
+            }
 
             onSelect(
               campaigns.find((discount) => discount.campaign === e.target.value)

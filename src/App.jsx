@@ -46,7 +46,7 @@ function App() {
         amount: 0,
       },
       component: (params, campaign) => (
-        <div key={campaign}>
+        <div key={campaign} className='flex gap-4 flex-wrap'>
           <label className=' text-start content-center'>
             Discount amount (THB)
           </label>
@@ -66,7 +66,7 @@ function App() {
               );
             }}
             value={params.amount}
-            className='border border-gray-200 rounded-xl p-2 ml-4'
+            className='border border-gray-200 rounded-xl p-2 sm:ml-4'
           />
         </div>
       ),
@@ -91,7 +91,7 @@ function App() {
         percentage: 0,
       },
       component: (params, campaign) => (
-        <div key={campaign}>
+        <div key={campaign} className='flex gap-4 flex-wrap'>
           <label className='min-w-22 text-start content-center'>
             Discount amount (%)
           </label>
@@ -111,7 +111,7 @@ function App() {
               )
             }
             value={params.percentage}
-            className='border border-gray-200 rounded-xl p-2 ml-4'
+            className='border border-gray-200 rounded-xl p-2'
           />
         </div>
       ),
@@ -140,56 +140,62 @@ function App() {
         selectedCategory: 'Clothing',
       },
       component: (params, campaign) => (
-        <div key={campaign}>
-          <label className='min-w-22 text-start content-center'>Category</label>
-          <select
-            value={params.selectedCategory}
-            onChange={(e) =>
-              setCampaigns(
-                campaigns.map((prev) =>
-                  prev.campaign === 'Percentage discount by item category'
-                    ? {
-                        ...prev,
-                        parameter: {
-                          ...prev.parameter,
-                          selectedCategory: e.target.value,
-                        },
-                      }
-                    : prev
+        <div key={campaign} className='flex flex-col gap-2'>
+          <div>
+            <label className='min-w-22 text-start content-center'>
+              Category
+            </label>
+            <select
+              value={params.selectedCategory}
+              onChange={(e) =>
+                setCampaigns(
+                  campaigns.map((prev) =>
+                    prev.campaign === 'Percentage discount by item category'
+                      ? {
+                          ...prev,
+                          parameter: {
+                            ...prev.parameter,
+                            selectedCategory: e.target.value,
+                          },
+                        }
+                      : prev
+                  )
                 )
-              )
-            }
-            className='border border-gray-200 rounded-xl p-2 ml-4'
-          >
-            {params.productCategories.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
+              }
+              className='border border-gray-200 rounded-xl p-2 ml-8'
+            >
+              {params.productCategories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+          </div>
 
-          <label className='min-w-22 text-start content-center ml-4'>
-            Discount amount (%)
-          </label>
-          <input
-            onChange={(e) =>
-              setCampaigns((campaigns) =>
-                campaigns.map((prev) =>
-                  prev.campaign === 'Percentage discount by item category'
-                    ? {
-                        ...prev,
-                        parameter: {
-                          ...prev.parameter,
-                          amount: Number(e.target.value.replace(/\D/g, '')),
-                        },
-                      }
-                    : prev
+          <div>
+            <label className='min-w-22 text-start content-center'>
+              Discount amount (%)
+            </label>
+            <input
+              onChange={(e) =>
+                setCampaigns((campaigns) =>
+                  campaigns.map((prev) =>
+                    prev.campaign === 'Percentage discount by item category'
+                      ? {
+                          ...prev,
+                          parameter: {
+                            ...prev.parameter,
+                            amount: Number(e.target.value.replace(/\D/g, '')),
+                          },
+                        }
+                      : prev
+                  )
                 )
-              )
-            }
-            value={params.amount}
-            className='border border-gray-200 rounded-xl p-2 ml-4'
-          />
+              }
+              value={params.amount}
+              className='border border-gray-200 rounded-xl p-2 ml-4 w-32'
+            />
+          </div>
         </div>
       ),
       calculateDiscount: (
@@ -241,7 +247,7 @@ function App() {
               )
             }
             value={params.points}
-            className='border border-gray-200 rounded-xl p-2 ml-4'
+            className='border border-gray-200 rounded-xl p-2 ml-4 w-32'
           />
         </div>
       ),
@@ -292,7 +298,7 @@ function App() {
                 )
               }
               value={params.everyAmount}
-              className='border border-gray-200 rounded-xl p-2 ml-8'
+              className='border border-gray-200 rounded-xl p-2 ml-8 w-32'
             />
           </div>
 
@@ -317,7 +323,7 @@ function App() {
                 )
               }
               value={params.willDiscount}
-              className='border border-gray-200 rounded-xl p-2 ml-3'
+              className='border border-gray-200 rounded-xl p-2 ml-3 w-32'
             />
           </div>
         </div>
