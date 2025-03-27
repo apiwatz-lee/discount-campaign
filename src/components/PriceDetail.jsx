@@ -1,4 +1,4 @@
-import { formarNumberWithCommas } from '../common';
+import { formatNumberWithCommas } from '../common';
 
 const PriceDetail = ({
   total = 0,
@@ -8,11 +8,11 @@ const PriceDetail = ({
   campaignApplies = [],
 }) => {
   return (
-    <div className='min-w-xl max-w-xl flex flex-col gap-6'>
-      <div className='font-bold'>
+    <div className='  flex flex-col gap-6 w-full'>
+      <div className='font-bold text-gray-900'>
         TOTAL PRICE :{' '}
         <span className='font-bold text-red-500'>
-          THB{formarNumberWithCommas(total)}
+          THB{formatNumberWithCommas(total)}
         </span>
       </div>
 
@@ -23,39 +23,39 @@ const PriceDetail = ({
           const discountLabels = {
             fixedAmount: (
               <>
-                <span className='font-bold text-green-700'>{`COUPON: `}</span>
+                <span className='font-bold text-gray-900'>{`COUPON: `}</span>
                 You saved{' '}
                 <span className='font-bold text-green-700'>
-                  THB{formarNumberWithCommas(value.discountAmount)}!
+                  THB{formatNumberWithCommas(value.discountAmount)}!
                 </span>{' '}
                 Your remaining balance is{' '}
                 <span className='font-bold text-green-700'>
-                  THB{formarNumberWithCommas(value.balance)}
+                  THB{formatNumberWithCommas(value.balance)}
                 </span>
                 .
               </>
             ),
             percentageDiscount: (
               <>
-                <span className='font-bold text-green-700'>{`COUPON: `}</span>
+                <span className='font-bold text-gray-900'>{`COUPON: `}</span>
                 You got a{' '}
                 <span className='font-bold text-green-700'>
                   {value.discountPercent}%
                 </span>
                 {` discount, you saved`}
                 <span className='font-bold text-green-700'>
-                  THB{formarNumberWithCommas(value.discountAmount)}
+                  THB{formatNumberWithCommas(value.discountAmount)}
                 </span>
                 . Your balance is now{' '}
                 <span className='font-bold text-green-700'>
                   THB
-                  {formarNumberWithCommas(value.balance)}.
+                  {formatNumberWithCommas(value.balance)}.
                 </span>
               </>
             ),
             percentageDiscountByCategory: (
               <>
-                <span className='font-bold text-green-700'>{`ON TOP: `}</span>
+                <span className='font-bold text-gray-900'>{`ON TOP: `}</span>
                 Your{' '}
                 <span className='font-bold text-green-700'>
                   {value.selectedCategory}
@@ -66,53 +66,53 @@ const PriceDetail = ({
                 </span>{' '}
                 discount (
                 <span className='font-bold text-green-700'>
-                  THB{formarNumberWithCommas(value.totalCategory)}
+                  THB{formatNumberWithCommas(value.totalCategory)}
                 </span>{' '}
                 items in total), saving you{' '}
                 <span className='font-bold text-green-700'>
-                  THB{formarNumberWithCommas(value.discountAmount)}
+                  THB{formatNumberWithCommas(value.discountAmount)}
                 </span>
                 . Your balance is now{' '}
                 <span className='font-bold text-green-700'>
-                  THB{formarNumberWithCommas(value.balance)}
+                  THB{formatNumberWithCommas(value.balance)}
                 </span>
                 .
               </>
             ),
             discountByPoints: (
               <>
-                <span className='font-bold text-green-700'>{`ON TOP: `}</span>
+                <span className='font-bold text-gray-900'>{`ON TOP: `}</span>
                 You used your points and saved{' '}
                 <span className='font-bold text-green-700'>
-                  THB{formarNumberWithCommas(value.discountAmount)}
+                  THB{formatNumberWithCommas(value.discountAmount)}
                 </span>
                 . Your new balance is{' '}
                 <span className='font-bold text-green-700'>
-                  THB{formarNumberWithCommas(value.balance)}
+                  THB{formatNumberWithCommas(value.balance)}
                 </span>
                 .
               </>
             ),
             specialCampaigns: (
               <>
-                <span className='font-bold text-green-700'>{`SEASONAL: `}</span>
+                <span className='font-bold text-gray-900'>{`SEASONAL: `}</span>
                 For every{' '}
                 <span className='font-bold text-green-700'>
                   THB
-                  {formarNumberWithCommas(value.everyAmount)}{' '}
+                  {formatNumberWithCommas(value.everyAmount)}{' '}
                 </span>
                 spent, you get a{' '}
                 <span className='font-bold text-green-700'>
-                  THB{formarNumberWithCommas(value.willDiscount)}
+                  THB{formatNumberWithCommas(value.willDiscount)}
                 </span>{' '}
                 discount. This campaign, you saved{' '}
                 <span className='font-bold text-green-700'>
-                  THB{formarNumberWithCommas(value.discountAmount)}
+                  THB{formatNumberWithCommas(value.discountAmount)}
                 </span>{' '}
                 leaving you with a balance of{' '}
                 <span className='font-bold text-green-700'>
                   THB
-                  {formarNumberWithCommas(value.balance)}
+                  {formatNumberWithCommas(value.balance)}
                 </span>
               </>
             ),
@@ -124,16 +124,16 @@ const PriceDetail = ({
 
       {campaignApplies.length > 0 && (
         <div>
-          <div className='font-bold'>
+          <div className='font-bold text-gray-900'>
             NET DISCOUNT :{' '}
             <span className='font-bold text-green-700'>
-              THB{formarNumberWithCommas(totalDiscount)}
+              THB{formatNumberWithCommas(totalDiscount)}
             </span>
           </div>
-          <div className='font-bold '>
+          <div className='font-bold text-gray-900'>
             NET PRICE :{' '}
             <span className='font-bold text-red-500'>
-              THB{formarNumberWithCommas(netPrice)}
+              THB{formatNumberWithCommas(netPrice)}
             </span>
           </div>
         </div>

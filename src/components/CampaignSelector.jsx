@@ -5,10 +5,10 @@ const CampaignSelector = ({
   selectedCampaign = {},
 }) => {
   return (
-    <form className='flex flex-col gap-4' onSubmit={onSubmit}>
-      <div className='flex gap-4 '>
-        <label className='min-w-22 text-start content-center'>
-          Campaigns :
+    <form className='flex flex-col gap-4 w-full' onSubmit={onSubmit}>
+      <div className='flex flex-col gap-4 '>
+        <label className=' text-center content-center font-extrabold text-green-800'>
+          Campaigns
         </label>
         <select
           className='border border-gray-200 rounded-2xl p-2'

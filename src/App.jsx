@@ -47,7 +47,7 @@ function App() {
       },
       component: (params, campaign) => (
         <div key={campaign}>
-          <label className='min-w-22 text-start content-center'>
+          <label className=' text-start content-center'>
             Discount amount (THB)
           </label>
           <input
@@ -66,7 +66,7 @@ function App() {
               );
             }}
             value={params.amount}
-            className='border border-gray-200 rounded-xl p-2'
+            className='border border-gray-200 rounded-xl p-2 ml-4'
           />
         </div>
       ),
@@ -111,7 +111,7 @@ function App() {
               )
             }
             value={params.percentage}
-            className='border border-gray-200 rounded-xl p-2'
+            className='border border-gray-200 rounded-xl p-2 ml-4'
           />
         </div>
       ),
@@ -159,6 +159,7 @@ function App() {
                 )
               )
             }
+            className='border border-gray-200 rounded-xl p-2 ml-4'
           >
             {params.productCategories.map((category) => (
               <option key={category} value={category}>
@@ -167,7 +168,7 @@ function App() {
             ))}
           </select>
 
-          <label className='min-w-22 text-start content-center'>
+          <label className='min-w-22 text-start content-center ml-4'>
             Discount amount (%)
           </label>
           <input
@@ -187,7 +188,7 @@ function App() {
               )
             }
             value={params.amount}
-            className='border border-gray-200 rounded-xl p-2'
+            className='border border-gray-200 rounded-xl p-2 ml-4'
           />
         </div>
       ),
@@ -240,7 +241,7 @@ function App() {
               )
             }
             value={params.points}
-            className='border border-gray-200 rounded-xl p-2'
+            className='border border-gray-200 rounded-xl p-2 ml-4'
           />
         </div>
       ),
@@ -270,55 +271,55 @@ function App() {
       },
       component: (params, campaign) => (
         <div key={campaign}>
-          <label className='min-w-22 text-start content-center'>
-            every (THB)
-          </label>
-          <input
-            onChange={(e) =>
-              setCampaigns((campaigns) =>
-                campaigns.map((prev) =>
-                  prev.campaign === 'Special campaigns'
-                    ? {
-                        ...prev,
-                        parameter: {
-                          ...prev.parameter,
-                          everyAmount: Number(
-                            e.target.value.replace(/\D/g, '')
-                          ),
-                        },
-                      }
-                    : prev
+          <div>
+            <label className=' text-start content-center'>every (THB)</label>
+            <input
+              onChange={(e) =>
+                setCampaigns((campaigns) =>
+                  campaigns.map((prev) =>
+                    prev.campaign === 'Special campaigns'
+                      ? {
+                          ...prev,
+                          parameter: {
+                            ...prev.parameter,
+                            everyAmount: Number(
+                              e.target.value.replace(/\D/g, '')
+                            ),
+                          },
+                        }
+                      : prev
+                  )
                 )
-              )
-            }
-            value={params.everyAmount}
-            className='border border-gray-200 rounded-xl p-2'
-          />
+              }
+              value={params.everyAmount}
+              className='border border-gray-200 rounded-xl p-2 ml-8'
+            />
+          </div>
 
-          <label className='min-w-22 text-start content-center'>
-            discount (THB)
-          </label>
-          <input
-            onChange={(e) =>
-              setCampaigns((campaigns) =>
-                campaigns.map((prev) =>
-                  prev.campaign === 'Special campaigns'
-                    ? {
-                        ...prev,
-                        parameter: {
-                          ...prev.parameter,
-                          willDiscount: Number(
-                            e.target.value.replace(/\D/g, '')
-                          ),
-                        },
-                      }
-                    : prev
+          <div className='mt-4'>
+            <label className='text-start content-center'>discount (THB)</label>
+            <input
+              onChange={(e) =>
+                setCampaigns((campaigns) =>
+                  campaigns.map((prev) =>
+                    prev.campaign === 'Special campaigns'
+                      ? {
+                          ...prev,
+                          parameter: {
+                            ...prev.parameter,
+                            willDiscount: Number(
+                              e.target.value.replace(/\D/g, '')
+                            ),
+                          },
+                        }
+                      : prev
+                  )
                 )
-              )
-            }
-            value={params.willDiscount}
-            className='border border-gray-200 rounded-xl p-2'
-          />
+              }
+              value={params.willDiscount}
+              className='border border-gray-200 rounded-xl p-2 ml-3'
+            />
+          </div>
         </div>
       ),
       calculateDiscount: (totalAfterOnTop, everyAmount, willDiscount) => {
@@ -465,7 +466,7 @@ function App() {
     .reduce((acc, item) => acc + item, 0);
 
   return (
-    <main className='mx-auto container flex flex-col justify-center items-center gap-12 my-28'>
+    <main className='mx-auto container flex flex-col justify-center items-center gap-12 my-28 p-4 w-full max-w-5xl'>
       {campaigns.length > 0 && (
         <CampaignSelector
           onSubmit={handleApplyDiscount}
@@ -475,7 +476,7 @@ function App() {
         />
       )}
 
-      <section className='flex justify-center gap-8 w-full'>
+      <section className='flex flex-col justify-center items-center gap-8 w-full'>
         <CartDetails cart={cart} />
         <PriceDetail
           total={total}
