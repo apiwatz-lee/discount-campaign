@@ -42,7 +42,7 @@ const PriceDetail = ({
                 <span className='font-bold text-green-700'>
                   {value.discountPercent}%
                 </span>
-                , you saved{' '}
+                {` discount, you saved`}
                 <span className='font-bold text-green-700'>
                   THB{formarNumberWithCommas(value.discountAmount)}
                 </span>
@@ -105,7 +105,7 @@ const PriceDetail = ({
                 <span className='font-bold text-green-700'>
                   THB{formarNumberWithCommas(value.willDiscount)}
                 </span>{' '}
-                discount. This time, you saved{' '}
+                discount. This campaign, you saved{' '}
                 <span className='font-bold text-green-700'>
                   THB{formarNumberWithCommas(value.discountAmount)}
                 </span>{' '}
