@@ -466,7 +466,7 @@ function App() {
     .reduce((acc, item) => acc + item, 0);
 
   return (
-    <main className='mx-auto container flex flex-col justify-center items-center gap-12 my-28 p-4 w-full max-w-5xl'>
+    <main className='mx-auto container flex flex-col justify-center items-center gap-12 p-8 w-full max-w-5xl'>
       {campaigns.length > 0 && (
         <CampaignSelector
           onSubmit={handleApplyDiscount}
