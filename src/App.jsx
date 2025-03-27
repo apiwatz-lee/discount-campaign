@@ -10,25 +10,27 @@ function App() {
   const [netPrice, setNetPrice] = useState(total);
   const [eachDiscount, setEachDiscount] = useState({
     fixedAmount: {
-      amount: 0,
+      discountAmount: 0,
       balance: 0,
     },
     percentageDiscount: {
-      amount: 0,
+      discountAmount: 0,
       balance: 0,
     },
     percentageDiscountByCategory: {
-      amount: 0,
+      selectedCategory: '',
+      totalCategory: 0,
+      discountAmount: 0,
       balance: 0,
     },
     discountByPoints: {
-      amount: 0,
+      discountAmount: 0,
       balance: 0,
     },
     specialCampaigns: {
       everyAmount: 0,
       willDiscount: 0,
-      amount: 0,
+      discountAmount: 0,
       balance: 0,
     },
   });
@@ -67,11 +69,11 @@ function App() {
       ),
       calculateDiscount: (totalBeforeDiscount, amount) => {
         const formulars = totalBeforeDiscount - amount;
-        setEachDiscount((eachDiscount) => ({
-          ...eachDiscount,
+        setEachDiscount((prev) => ({
+          ...prev,
           fixedAmount: {
             ...eachDiscount.fixedAmount,
-            amount,
+            discountAmount: amount,
             balance: formulars,
           },
         }));
@@ -113,11 +115,11 @@ function App() {
       calculateDiscount: (totalBeforeDiscount, percentage) => {
         const formulars =
           totalBeforeDiscount - totalBeforeDiscount * percentage * 0.01;
-        setEachDiscount((eachDiscount) => ({
-          ...eachDiscount,
+        setEachDiscount((prev) => ({
+          ...prev,
           percentageDiscount: {
-            ...eachDiscount.percentageDiscount,
-            amount: totalBeforeDiscount * percentage * 0.01,
+            ...prev.percentageDiscount,
+            discountAmount: totalBeforeDiscount * percentage * 0.01,
             balance: formulars,
           },
         }));
@@ -185,13 +187,20 @@ function App() {
           />
         </div>
       ),
-      calculateDiscount: (totalAfterCoupon, totalCategory, amount) => {
+      calculateDiscount: (
+        totalAfterCoupon,
+        totalCategory,
+        amount,
+        selectedCategory
+      ) => {
         const formulars = totalAfterCoupon - totalCategory * amount * 0.01;
-        setEachDiscount((eachDiscount) => ({
-          ...eachDiscount,
+        setEachDiscount((prev) => ({
+          ...prev,
           percentageDiscountByCategory: {
-            ...eachDiscount.percentageDiscountByCategory,
-            amount: totalCategory * amount * 0.01,
+            ...prev.percentageDiscountByCategory,
+            selectedCategory,
+            totalCategory: totalCategory,
+            discountAmount: totalCategory * amount * 0.01,
             balance: formulars,
           },
         }));
@@ -230,13 +239,16 @@ function App() {
           />
         </div>
       ),
-      calculateDiscount: (totalAfterCoupon, points) => {
-        const formulars = totalAfterCoupon - points;
-        setEachDiscount((eachDiscount) => ({
-          ...eachDiscount,
+      calculateDiscount: (totalAfterCoupon, points, total) => {
+        const limitDiscount = total * 0.2;
+        const discountAmount = points > limitDiscount ? limitDiscount : points;
+        const formulars = totalAfterCoupon - discountAmount;
+
+        setEachDiscount((prev) => ({
+          ...prev,
           discountByPoints: {
-            ...eachDiscount.discountByPoints,
-            amount: points,
+            ...prev.discountByPoints,
+            discountAmount: discountAmount,
             balance: formulars,
           },
         }));
@@ -309,13 +321,14 @@ function App() {
           totalAfterOnTop -
           Math.floor(totalAfterOnTop / everyAmount) * willDiscount;
 
-        setEachDiscount((eachDiscount) => ({
-          ...eachDiscount,
+        setEachDiscount((prev) => ({
+          ...prev,
           specialCampaigns: {
-            ...eachDiscount.specialCampaigns,
+            ...prev.specialCampaigns,
             willDiscount,
             everyAmount,
-            amount: Math.floor(totalAfterOnTop / everyAmount) * willDiscount,
+            discountAmount:
+              Math.floor(totalAfterOnTop / everyAmount) * willDiscount,
             balance: formulars,
           },
         }));
@@ -345,10 +358,15 @@ function App() {
                 ({ category }) => category === item.parameter.selectedCategory
               )
               .reduce((acc, item) => acc + item.price * item.quantity, 0),
-            item.parameter.amount
+            item.parameter.amount,
+            item.parameter.selectedCategory
           );
         case 'Discount by points':
-          return item.calculateDiscount(currentTotal, item.parameter.points);
+          return item.calculateDiscount(
+            currentTotal,
+            item.parameter.points,
+            total
+          );
         case 'Special campaigns':
           return item.calculateDiscount(
             currentTotal,
@@ -363,6 +381,7 @@ function App() {
 
   const handleApplyDiscount = (e) => {
     e.preventDefault();
+    if (!selectedCampaign.campaign) return;
     setCampaignApplies(
       [
         ...campaignApplies,
@@ -379,10 +398,13 @@ function App() {
   };
 
   useEffect(() => {
-    setSelectedCampaign(campaigns[0]);
+    // setSelectedCampaign(campaigns[0]);
     setNetPrice(handleCalculateFinalPrice());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [campaignApplies]);
+
+  // console.log('selectedCampaign', selectedCampaign);
+  // console.log('discountApplies', campaignApplies);
 
   return (
     <main className='mx-auto container flex flex-col justify-center items-center gap-12 my-28'>
@@ -394,14 +416,17 @@ function App() {
             </label>
             <select
               className='border border-gray-200 rounded-2xl p-2'
-              onChange={(e) =>
+              onChange={(e) => {
+                if (e.target.value === '') return;
+
                 setSelectedCampaign(
                   campaigns.find(
                     (discount) => discount.campaign === e.target.value
                   )
-                )
-              }
+                );
+              }}
             >
+              <option value=''>Select campaign</option>
               {campaigns?.map(({ campaign, category }) => (
                 <option key={campaign} value={campaign}>
                   {campaign} ({category})
@@ -453,23 +478,17 @@ function App() {
       <section>
         <div>Total before discount : {total}</div>
         {Object.entries(eachDiscount).map(([key, value]) => {
-          // if (!value.amount) return null;
+          if (!value.discountAmount) return null;
 
           const discountLabels = {
-            fixedAmount: 'Fixed amount :',
-            percentageDiscount: 'Percentage discount % :',
-            percentageDiscountByCategory:
-              'Percentage discount by item category :',
-            discountByPoints: 'Discount by points :',
-            specialCampaigns: `Special campaigns : every ${value.everyAmount} will discount ${value.willDiscount}`,
+            fixedAmount: `Fixed amount discount : got discount ${value.discountAmount} balance ${value.balance}`,
+            percentageDiscount: `Percentage discount % : got discount ${value.discountAmount} balance ${value.balance}`,
+            percentageDiscountByCategory: `Percentage discount by item category : ${value.selectedCategory} ${value.totalCategory} got discount ${value.discountAmount} balance ${value.balance}`,
+            discountByPoints: `Discount by points : got discount ${value.discountAmount} balance ${value.balance}`,
+            specialCampaigns: `Special campaigns : every ${value.everyAmount} will discount ${value.willDiscount}, you got discount ${value.discountAmount} balance ${value.balance}`,
           };
 
-          return (
-            <div key={key}>
-              {discountLabels[key]} {key === 'specialCampaigns' && `amount `}
-              {value.amount} balance {value.balance}
-            </div>
-          );
+          return <div key={key}>{discountLabels[key]}</div>;
         })}
 
         {campaignApplies.length > 0 && <div>Net price : {netPrice}</div>}
