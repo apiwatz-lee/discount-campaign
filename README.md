@@ -1,13 +1,21 @@
-# React + Vite
+By Aphiwat Leelasawatsuk
+# Shopping Cart Campaign Discount App 
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This application allows users to apply various discount campaigns to their shopping cart, such as fixed amounts, percentage discounts, category-based discounts, point-based discounts, and special seasonal campaigns. The application dynamically updates the cart total and displays detailed breakdowns of the applied discounts.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Fixed Amount Discount**: Apply a fixed amount discount to the total cart price.
+- **Percentage Discount**: Apply a percentage discount to the total cart price.
+- **Category-based Percentage Discount**: Apply a percentage discount on specific product categories in the cart (e.g., Clothing, Accessories, Electronics).
+- **Points-based Discount**: Apply a discount based on customer points, with a limit on the discount amount.
+- **Special Campaigns**: Apply seasonal discounts for every specific amount in the cart.
 
-## Expanding the ESLint configuration
+## Installation
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-# discount-campaign
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/apiwatz-lee/discount-campaign.git```
+2. Live site:
+   ```bash
+   https://apwdiscount.netlify.app/
