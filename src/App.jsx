@@ -72,16 +72,16 @@ function App() {
         </div>
       ),
       calculateDiscount: (totalBeforeDiscount, amount) => {
-        const formulars = totalBeforeDiscount - amount;
+        const balance = totalBeforeDiscount - amount;
         setEachDiscount((prev) => ({
           ...prev,
           fixedAmount: {
             ...prev.fixedAmount,
             discountAmount: amount,
-            balance: formulars,
+            balance: balance,
           },
         }));
-        return formulars;
+        return balance;
       },
       order: 1,
     },
@@ -117,7 +117,7 @@ function App() {
         </div>
       ),
       calculateDiscount: (totalBeforeDiscount, percentage) => {
-        const formulars =
+        const balance =
           totalBeforeDiscount - totalBeforeDiscount * percentage * 0.01;
         setEachDiscount((prev) => ({
           ...prev,
@@ -125,10 +125,10 @@ function App() {
             ...prev.percentageDiscount,
             discountPercent: percentage,
             discountAmount: totalBeforeDiscount * percentage * 0.01,
-            balance: formulars,
+            balance: balance,
           },
         }));
-        return formulars;
+        return balance;
       },
       order: 1,
     },
@@ -198,7 +198,7 @@ function App() {
         amount,
         selectedCategory
       ) => {
-        const formulars = totalAfterCoupon - totalCategory * amount * 0.01;
+        const balance = totalAfterCoupon - totalCategory * amount * 0.01;
         setEachDiscount((prev) => ({
           ...prev,
           percentageDiscountByCategory: {
@@ -207,10 +207,10 @@ function App() {
             totalCategory: totalCategory,
             discountPercent: amount,
             discountAmount: totalCategory * amount * 0.01,
-            balance: formulars,
+            balance: balance,
           },
         }));
-        return formulars;
+        return balance;
       },
       order: 2,
     },
@@ -248,17 +248,17 @@ function App() {
       calculateDiscount: (totalAfterCoupon, points, total) => {
         const limitDiscount = total * 0.2;
         const discountAmount = points > limitDiscount ? limitDiscount : points;
-        const formulars = totalAfterCoupon - discountAmount;
+        const balance = totalAfterCoupon - discountAmount;
 
         setEachDiscount((prev) => ({
           ...prev,
           discountByPoints: {
             ...prev.discountByPoints,
             discountAmount: discountAmount,
-            balance: formulars,
+            balance: balance,
           },
         }));
-        return formulars;
+        return balance;
       },
       order: 2,
     },
@@ -323,7 +323,7 @@ function App() {
         </div>
       ),
       calculateDiscount: (totalAfterOnTop, everyAmount, willDiscount) => {
-        const formulars =
+        const balance =
           totalAfterOnTop -
           Math.floor(totalAfterOnTop / everyAmount) * willDiscount;
 
@@ -335,10 +335,10 @@ function App() {
             everyAmount,
             discountAmount:
               Math.floor(totalAfterOnTop / everyAmount) * willDiscount,
-            balance: formulars,
+            balance: balance,
           },
         }));
-        return formulars;
+        return balance;
       },
       order: 3,
     },
@@ -465,8 +465,6 @@ function App() {
     .map(([key, value]) => value.discountAmount)
     .reduce((acc, item) => acc + item, 0);
 
-  console.log('totalDiscount', totalDiscount);
-
   return (
     <main className='mx-auto container flex flex-col justify-center items-center gap-12 my-28'>
       {campaigns.length > 0 && (
@@ -569,7 +567,7 @@ function App() {
                 percentageDiscount: (
                   <>
                     <span className='font-bold text-green-700'>{`COUPON: `}</span>
-                    Awesome! You got a{' '}
+                    You got a{' '}
                     <span className='font-bold text-green-700'>
                       {value.discountPercent}%
                     </span>
@@ -587,7 +585,7 @@ function App() {
                 percentageDiscountByCategory: (
                   <>
                     <span className='font-bold text-green-700'>{`ON TOP: `}</span>
-                    Great news! Your{' '}
+                    Your{' '}
                     <span className='font-bold text-green-700'>
                       {value.selectedCategory}
                     </span>{' '}
