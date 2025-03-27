@@ -9,9 +9,7 @@ function App() {
   const [selectedCampaign, setSelectedCampaign] = useState({});
   const [campaignApplies, setCampaignApplies] = useState([]);
   const [cart] = useState(initialCart);
-
   const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
-
   const [netPrice, setNetPrice] = useState(total);
   const [eachDiscount, setEachDiscount] = useState({
     fixedAmount: {
@@ -40,7 +38,6 @@ function App() {
       balance: 0,
     },
   });
-
   const initialCampaigns = [
     {
       campaign: 'Fixed amount',
@@ -345,7 +342,6 @@ function App() {
       order: 3,
     },
   ];
-
   const [campaigns, setCampaigns] = useState(initialCampaigns);
 
   const handleCalculateDiscount = () => {

@@ -1,11 +1,11 @@
 import { formarNumberWithCommas } from '../common';
 
 const PriceDetail = ({
-  total,
-  eachDiscount,
-  totalDiscount,
-  netPrice,
-  campaignApplies,
+  total = 0,
+  eachDiscount = {},
+  totalDiscount = 0,
+  netPrice = 0,
+  campaignApplies = [],
 }) => {
   return (
     <div className='min-w-xl max-w-xl flex flex-col gap-6'>

@@ -1,6 +1,6 @@
 import { formarNumberWithCommas } from '../common';
 
-const CartDetails = ({ cart }) => {
+const CartDetails = ({ cart = [] }) => {
   return (
     <table className='table-auto'>
       <thead>
@@ -13,7 +13,7 @@ const CartDetails = ({ cart }) => {
         </tr>
       </thead>
       <tbody>
-        {cart.map(({ id, name, price, quantity, category }) => (
+        {cart?.map(({ id, name, price, quantity, category }) => (
           <tr key={id}>
             <td className='border px-4 py-2'>{name}</td>
             <td className='border px-4 py-2'>{category}</td>

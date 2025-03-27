@@ -1,8 +1,8 @@
 const CampaignSelector = ({
-  onSubmit,
-  onSelect,
-  campaigns,
-  selectedCampaign,
+  onSubmit = () => {},
+  onSelect = () => {},
+  campaigns = [],
+  selectedCampaign = {},
 }) => {
   return (
     <form className='flex flex-col gap-4' onSubmit={onSubmit}>
