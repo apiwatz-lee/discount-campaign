@@ -1,5 +1,7 @@
-By Aphiwat Leelasawatsuk
-# Shopping Cart Campaign Discount App 
+# Developed by
+Mr. Aphiwat Leelasawatsuk
+
+## Shopping Cart Campaign Discount App 
 
 This application allows users to apply various discount campaigns to their shopping cart, such as fixed amounts, percentage discounts, category-based discounts, point-based discounts, and special seasonal campaigns. The application dynamically updates the cart total and displays detailed breakdowns of the applied discounts.
 
@@ -15,7 +17,7 @@ This application allows users to apply various discount campaigns to their shopp
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/apiwatz-lee/discount-campaign.git```
+   git clone https://github.com/apiwatz-lee/discount-campaign.git
 2. Live site:
    ```bash
    https://apwdiscount.netlify.app/
